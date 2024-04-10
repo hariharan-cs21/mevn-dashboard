@@ -31,7 +31,7 @@ export default {
   justify-content: flex-end;
   align-items: center;
   background-color: #dcdbdb;
-  padding: 10px;
+  padding: 15px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
 }
