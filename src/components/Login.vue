@@ -14,6 +14,13 @@
       <button type="submit">Login</button>
     </form>
   </div>
+  <div v-if="showUploadPopup" class="popup">
+    <div class="popup-content">
+      <p>{{ popupMessage }}</p>
+
+      <button @click="hideUploadPopup" class="popup-button">OK</button>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -21,6 +28,8 @@ import axios from 'axios';
 
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+const showUploadPopup = ref(false);
+const popupMessage = ref('');
 
 const user = ref({
   user_email: '',
@@ -48,13 +57,19 @@ async function submitForm() {
         router.push('/performance');
       }
     } else {
-      console.error('Login failed:', response.statusText);
+      showUploadPopup.value = true;
+      popupMessage.value = error.message
     }
   } catch (error) {
     console.error(error);
+    showUploadPopup.value = true;
+    console.log(error);
+    popupMessage.value = error.response.data.message;
   }
 }
-
+const hideUploadPopup = () => {
+  showUploadPopup.value = false;
+};
 onMounted(async () => {
   axios.defaults.withCredentials = true;
 
@@ -128,6 +143,39 @@ button {
 }
 
 button:hover {
+  background-color: #0056b3;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.popup-button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-button:hover {
   background-color: #0056b3;
 }
 </style>
