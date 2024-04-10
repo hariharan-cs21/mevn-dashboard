@@ -2,7 +2,7 @@
   <div class="performance">
     <div class="card performance-card">
       <h2>Performance Overview</h2>
-      <div class="metrics">
+      <div style="max-height: 80vh; overflow: auto;" class="metrics">
         <div class="metric">
           <div class="label">Name</div>
           <div class="value">{{ name }}</div>
@@ -28,10 +28,10 @@
     </div>
 
     <div class="card placements-card">
-      <h2>Placements</h2>
-      <div class="placements">
+      <h2>Past Placements</h2>
+      <div style="max-height: 80vh; overflow: auto;" class="placements">
         <div v-for="(prev, index) in previousPlacements" :key="index" class="placement">
-          <h3>{{ prev.name }}</h3>
+          <h3>{{ index + 1 }}. {{ prev.name }}</h3>
           <p>{{ prev.role }}</p>
         </div>
 

@@ -52,6 +52,9 @@
         </tbody>
       </table>
     </div>
+    <p id="last"></p>
+    <button class="bottom-button" @click="scrollToBottom">⬇&nbsp;scroll</button>
+
     <div v-if="showUploadPopup" class="popup">
       <div class="popup-content">
         <p>File uploaded successfully!</p>
@@ -73,6 +76,13 @@ const nameFilter = ref('');
 const departmentFilter = ref('');
 const hostellerFilter = ref('');
 const router = useRouter();
+
+const scrollToBottom = () => {
+  const lastElement = document.getElementById('last');
+  if (lastElement) {
+    lastElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
+};
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -112,24 +122,24 @@ const handleFileUpload = (event) => {
 //   reader.readAsText(file);
 // };
 
-const CSVtoJSON = (csvData) => {
-  const lines = csvData.split("\n");
-  const result = [];
-  const headers = lines[0].split(",");
+// const CSVtoJSON = (csvData) => {
+//   const lines = csvData.split("\n");
+//   const result = [];
+//   const headers = lines[0].split(",");
 
-  for (let i = 1; i < lines.length; i++) {
-    const obj = {};
-    const currentLine = lines[i].split(",");
+//   for (let i = 1; i < lines.length; i++) {
+//     const obj = {};
+//     const currentLine = lines[i].split(",");
 
-    for (let j = 0; j < headers.length; j++) {
-      obj[headers[j]] = currentLine[j];
-    }
+//     for (let j = 0; j < headers.length; j++) {
+//       obj[headers[j]] = currentLine[j];
+//     }
 
-    result.push(obj);
-  }
+//     result.push(obj);
+//   }
 
-  return result;
-};
+//   return result;
+// };
 const uploadFile = async () => {
   axios.defaults.withCredentials = true;
 
@@ -181,8 +191,13 @@ onMounted(async () => {
     if (!sessionData.loggedIn) {
       router.push('/login');
     }
+    if (sessionData.user_type === 'admin') {
+      localStorage.setItem("userType", "admin")
+
+    }
     if (sessionData.user_type === 'student') {
       router.push('/404notfound');
+      localStorage.setItem("userType", "student")
     }
   } catch (error) {
     console.error('Error checking session:', error);
@@ -329,6 +344,23 @@ tr:hover {
 }
 
 .popup-button:hover {
+  background-color: #0056b3;
+}
+
+.bottom-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.bottom-button:hover {
   background-color: #0056b3;
 }
 </style>

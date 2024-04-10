@@ -52,8 +52,12 @@ async function submitForm() {
       const userData = await response.data;
       localStorage.setItem("email", userData.user.user_email)
       if (userData.user.userType === 'admin') {
+        localStorage.setItem("userType", "admin")
+
         router.push('/studentData');
       } else if (userData.user.userType === 'student') {
+        localStorage.setItem("userType", "student")
+
         router.push('/performance');
       }
     } else {
@@ -81,9 +85,11 @@ onMounted(async () => {
       console.log(sessionData);
       if (sessionData.loggedIn) {
         if (sessionData.user_type === 'admin') {
+          localStorage.setItem("userType", "admin")
           router.push('/studentData');
           alert("Logging in with previous session")
         } else if (sessionData.user_type === 'student') {
+          localStorage.setItem("userType", "student")
           router.push('/performance');
           alert("Logging in with previous session")
         }
