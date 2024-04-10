@@ -1,0 +1,133 @@
+<template>
+  <div>
+    <h2>Login</h2>
+    <form @submit.prevent="submitForm">
+      <div>
+        <label for="user_email">Email:</label>
+        <input type="email" id="user_email" v-model="user.user_email" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" v-model="user.password" required>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import axios from 'axios';
+
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const user = ref({
+  user_email: '',
+  password: '',
+});
+
+const router = useRouter();
+
+
+async function submitForm() {
+  axios.defaults.withCredentials = true;
+
+  try {
+    const response = await axios.post('http://localhost:4000/login', {
+      user_email: user.value.user_email,
+      password: user.value.password
+    });
+    if (response.status === 200) {
+
+      const userData = await response.data;
+      localStorage.setItem("email", userData.user.user_email)
+      if (userData.user.userType === 'admin') {
+        router.push('/studentData');
+      } else if (userData.user.userType === 'student') {
+        router.push('/performance');
+      }
+    } else {
+      console.error('Login failed:', response.statusText);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+onMounted(async () => {
+  axios.defaults.withCredentials = true;
+
+
+  try {
+    const response = await axios.get('http://localhost:4000/checkSession');
+    if (response) {
+      const sessionData = await response.data;
+      console.log(sessionData);
+      if (sessionData.loggedIn) {
+        if (sessionData.user_type === 'admin') {
+          router.push('/studentData');
+          alert("Logging in with previous session")
+        } else if (sessionData.user_type === 'student') {
+          router.push('/performance');
+          alert("Logging in with previous session")
+        }
+      } else {
+
+      }
+    } else {
+      console.error('Failed to check session:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error checking session:', error);
+  }
+});
+</script>
+
+<style scoped>
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #fff;
+  margin-top: 5px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>
