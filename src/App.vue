@@ -7,7 +7,7 @@
     <RouterLink to="/register" class="navbar-link">Register</RouterLink>
 
     <RouterLink v-if="userType === 'admin'" to="/studentData" class="navbar-link">Student List</RouterLink>
-    <p style="cursor: pointer;" @click="logout" class="navbar-link">Logout</p>
+    <p v-if="userType !== null" style="cursor: pointer;" @click="logout" class="navbar-link">Logout</p>
   </div>
   <RouterView></RouterView>
 </template>
@@ -59,3 +59,4 @@ export default {
   color: #007bff;
 }
 </style>
+checksession if not loggedout show logout button else hide it

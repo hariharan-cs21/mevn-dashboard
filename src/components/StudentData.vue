@@ -9,16 +9,35 @@
       </div>
       <div class="filter-container">
         <label for="departmentFilter" class="filter-label">Filter by Department:</label>
-        <input type="text" id="departmentFilter" v-model="departmentFilter" class="filter-input">
+        <select id="departmentFilter" v-model="departmentFilter" class="filter-input">
+          <option value="">All</option>
+          <option value="AD">AD</option>
+          <option value="AG">AG</option>
+
+          <option value="AL">AL</option>
+          <option value="BM">BM</option>
+          <option value="BT">BT</option>
+          <option value="CB">CB</option>
+          <option value="CS">CS</option>
+          <option value="CT">CT</option>
+          <option value="EC">EC</option>
+          <option value="EE">EE</option>
+          <option value="EI">EI</option>
+          <option value="IS">IS</option>
+          <option value="IT">IT</option>
+          <option value="MC">MC</option>
+          <option value="ME">ME</option>
+
+        </select>
       </div>
-      <div class="filter-container">
+      <!-- <div class="filter-container">
         <label for="hostellerFilter" class="filter-label">Filter by Hosteller:</label>
         <select id="hostellerFilter" v-model="hostellerFilter" class="filter-input">
           <option value="">All</option>
           <option value="HOSTELLER">Hosteller</option>
           <option value="DAYSCHOLAR">Dayscholar</option>
         </select>
-      </div>
+      </div> -->
     </div>
     <div class="table-container">
       <table class="data-table">
@@ -28,10 +47,9 @@
             <th>Register Number</th>
             <th>Student Name</th>
             <th>Batch</th>
-            <th>Gender</th>
+            <th>Contact</th>
             <th>Department</th>
             <th>Student Email</th>
-            <th>Hosteller/Dayscholar</th>
             <th>Undertaking</th>
           </tr>
         </thead>
@@ -42,12 +60,13 @@
             <td>{{ row.registerNumber }}</td>
             <td>{{ row.studentname }}</td>
             <td>{{ row.batch }}</td>
-            <td>{{ row.gender }}</td>
+            <td>{{ row.contact }}</td>
             <td>{{ row.department }}</td>
             <td>{{ row.studentEmail }}</td>
-            <td>{{ row.hostellerOrDayscholar }}</td>
             <td>{{ row.undertaking }}</td>
-            <td>View Performance</td>
+            <td>
+              <button class="view" @click="viewPerformance(row._id)">View Performance</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -74,7 +93,7 @@ const tableHeaders = ref([]);
 const showUploadPopup = ref(false);
 const nameFilter = ref('');
 const departmentFilter = ref('');
-const hostellerFilter = ref('');
+// const hostellerFilter = ref('');
 const router = useRouter();
 
 const scrollToBottom = () => {
@@ -83,6 +102,28 @@ const scrollToBottom = () => {
     lastElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 };
+
+const viewPerformance = async (id) => {
+  axios.defaults.withCredentials = true;
+
+  try {
+    const response = await axios.get(`http://localhost:4000/performance/${id}`);
+    const performanceData = response.data;
+
+    router.push({
+      name: 'studentperformance',
+      params: { studentId: id },
+      query: { performanceData: JSON.stringify(performanceData) }
+    });
+
+  } catch (error) {
+    console.error('Error fetching performance data:', error);
+  }
+};
+
+
+
+
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
@@ -215,9 +256,9 @@ const filteredTableData = computed(() => {
     filteredData = filteredData.filter(row => row.department.toLowerCase().includes(departmentFilter.value.trim().toLowerCase()));
   }
 
-  if (hostellerFilter.value !== '') {
-    filteredData = filteredData.filter(row => row.hostellerOrDayscholar === hostellerFilter.value);
-  }
+  // if (hostellerFilter.value !== '') {
+  //   filteredData = filteredData.filter(row => row.hostellerOrDayscholar === hostellerFilter.value);
+  // }
 
   return filteredData;
 });
@@ -242,7 +283,17 @@ const filteredTableData = computed(() => {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+}
+
+.view {
+  padding: 8px 20px;
+  background-color: gray;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
 }
 
 .upload-button:hover {
