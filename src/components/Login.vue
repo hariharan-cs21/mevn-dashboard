@@ -47,22 +47,31 @@ async function submitForm() {
       user_email: user.value.user_email,
       password: user.value.password
     });
+
     if (response.status === 200) {
+      const userData = response.data.user;
 
-      const userData = await response.data;
-      localStorage.setItem("email", userData.user.user_email)
-      if (userData.user.userType === 'admin') {
-        localStorage.setItem("userType", "admin")
+      localStorage.setItem("email", userData.user_email);
 
+      if (userData._id) {
+        localStorage.setItem("userId", userData.studentId._id);
+      } else {
+        console.error("User ID not found in response");
+        showUploadPopup.value = true;
+        popupMessage.value = "User ID not found in response";
+        return;
+      }
+
+      if (userData.userType === 'admin') {
+        localStorage.setItem("userType", "admin");
         router.push('/studentData');
-      } else if (userData.user.userType === 'student') {
-        localStorage.setItem("userType", "student")
-
+      } else if (userData.userType === 'student') {
+        localStorage.setItem("userType", "student");
         router.push('/performance');
       }
     } else {
       showUploadPopup.value = true;
-      popupMessage.value = error.message
+      popupMessage.value = error.message;
     }
   } catch (error) {
     console.error(error);
@@ -71,6 +80,7 @@ async function submitForm() {
     popupMessage.value = error.response.data.message;
   }
 }
+
 const hideUploadPopup = () => {
   showUploadPopup.value = false;
 };
@@ -80,6 +90,7 @@ onMounted(async () => {
 
   try {
     const response = await axios.get('http://localhost:4000/checkSession');
+
     if (response) {
       const sessionData = await response.data;
       console.log(sessionData);

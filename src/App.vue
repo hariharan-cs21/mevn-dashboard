@@ -4,7 +4,8 @@
     <p style="margin-left: 10px; font-size: 12px;font-weight: bold;">{{ email }}</p>
 
     <RouterLink to="/login" class="navbar-link">Login</RouterLink>
-    <RouterLink to="/register" class="navbar-link">Register</RouterLink>
+    <RouterLink v-if="userType !== 'student'" to="/register" class="navbar-link">Register</RouterLink>
+    <RouterLink v-if="userType === 'student'" to="/performance" class="navbar-link">Dashboard</RouterLink>
 
     <RouterLink v-if="userType === 'admin'" to="/studentData" class="navbar-link">Student List</RouterLink>
     <p v-if="userType !== null" style="cursor: pointer;" @click="logout" class="navbar-link">Logout</p>
@@ -25,12 +26,21 @@ export default {
   },
   methods: {
     async logout() {
-      await axios.post("http://localhost:4000/logout")
-      this.$router.push('/login');
-      localStorage.removeItem("email")
-      localStorage.removeItem("userType")
+      try {
+        const response = await axios.post("http://localhost:4000/logout");
 
+        if (response.status === 200) {
+          localStorage.removeItem("email");
+          localStorage.removeItem("userType");
+          this.$router.push('/login');
+        } else {
+          console.log("Failed to logout");
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
+
   }
 }
 </script>

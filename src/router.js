@@ -5,6 +5,7 @@ import StudentData from './components/StudentData.vue';
 import Performance from './components/Performance.vue';
 import Register from './components/Register.vue';
 import StudentDashboard from './components/StudentDashboard.vue';
+import AddPerformance from './components/AddPerformance.vue';
 
 const routes = [
     {
@@ -27,6 +28,12 @@ const routes = [
         name: "studentperformance",
         path: '/performance/:studentId',
         component: StudentDashboard,
+        props: true
+    },
+    {
+        path: '/addPerformance',
+        name: 'AddPerformance',
+        component: AddPerformance,
         props: true
     },
 

@@ -11,16 +11,34 @@
     <div class="main-content">
       <div class="student-info">
         <div class="column">
-
           <p><strong>Batch:</strong> {{ performanceData.batch }}</p>
           <p><strong>Department:</strong> {{ performanceData.department }}</p>
           <p><strong>Contact: </strong><a href="tel:{{ performanceData.contact }}">{{ performanceData.contact }}</a></p>
-
         </div>
         <div class="column">
           <p><strong>Email:</strong> {{ performanceData.studentEmail }}</p>
           <p><strong>Undertaking:</strong> {{ performanceData.undertaking }}</p>
         </div>
+      </div>
+
+      <div class="assessment-data">
+        <h3>Assessments Completed</h3>
+        <table class="assessment-table">
+          <thead>
+            <tr>
+              <th>Assessment Name</th>
+              <th>Date Completed</th>
+              <th>Marks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="assessment in performanceData.assessmentsCompleted" :key="assessment._id">
+              <td>{{ assessment.assessmentName }}</td>
+              <td>{{ new Date(assessment.dateCompleted).toLocaleDateString() }}</td>
+              <td>{{ assessment.marks }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="chart-container">
@@ -132,6 +150,27 @@ export default {
 .column p strong {
   font-weight: bold;
   color: #555555;
+}
+
+.assessment-data {
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.assessment-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assessment-table th,
+.assessment-table td {
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  text-align: left;
+}
+
+.assessment-table th {
+  background-color: #f0f0f0;
 }
 
 .chart-container {

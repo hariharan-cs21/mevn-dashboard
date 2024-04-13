@@ -7,6 +7,9 @@
         <label for="nameFilter" class="filter-label">Filter by Name:</label>
         <input type="text" id="nameFilter" v-model="nameFilter" class="filter-input">
       </div>
+      <div v-if="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+      </div>
       <div class="filter-container">
         <label for="departmentFilter" class="filter-label">Filter by Department:</label>
         <select id="departmentFilter" v-model="departmentFilter" class="filter-input">
@@ -66,6 +69,7 @@
             <td>{{ row.undertaking }}</td>
             <td>
               <button class="view" @click="viewPerformance(row._id)">View Performance</button>
+              <button class="add-performance" @click="addPerformance(row._id)">Add Performance</button>
             </td>
           </tr>
         </tbody>
@@ -94,6 +98,8 @@ const showUploadPopup = ref(false);
 const nameFilter = ref('');
 const departmentFilter = ref('');
 // const hostellerFilter = ref('');
+const isLoading = ref(false);
+
 const router = useRouter();
 
 const scrollToBottom = () => {
@@ -113,7 +119,9 @@ const viewPerformance = async (id) => {
     router.push({
       name: 'studentperformance',
       params: { studentId: id },
-      query: { performanceData: JSON.stringify(performanceData) }
+      query: {
+        performanceData: JSON.stringify(performanceData)
+      }
     });
 
   } catch (error) {
@@ -122,6 +130,13 @@ const viewPerformance = async (id) => {
 };
 
 
+const addPerformance = async (id) => {
+  try {
+    router.push({ name: 'AddPerformance', query: { studentId: id } });
+  } catch (error) {
+    console.error('Error navigating to AddPerformance:', error);
+  }
+};
 
 
 
@@ -207,7 +222,7 @@ const hideUploadPopup = () => {
 
 const fetchData = async () => {
   axios.defaults.withCredentials = true;
-
+  isLoading.value = true;
   try {
     const response = await axios.get('http://localhost:4000/studentData');
     const data = response.data;
@@ -218,6 +233,9 @@ const fetchData = async () => {
     }
   } catch (error) {
     console.error('An error occurred while fetching data:', error);
+  }
+  finally {
+    isLoading.value = false;
   }
 };
 fetchData()
@@ -298,6 +316,37 @@ const filteredTableData = computed(() => {
 
 .upload-button:hover {
   background-color: #0056b3;
+}
+
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-radius: 50%;
+  border-left: 8px solid #3498db;
+  width: 50px;
+  height: 50px;
+  animation: load 1s linear infinite;
+}
+
+@keyframes load {
+  0% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .filters {

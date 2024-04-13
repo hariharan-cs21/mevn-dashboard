@@ -2,29 +2,18 @@
   <div class="performance">
     <div class="card performance-card">
       <h2>Performance Overview</h2>
-      <div style="max-height: 80vh; overflow: auto;" class="metrics">
+      <div class="metrics">
         <div class="metric">
           <div class="label">Name</div>
-          <div class="value">{{ name }}</div>
+          <div class="value">{{ studentname }}</div>
         </div>
-        <div class="metric">
-          <div class="label">Current Level</div>
-          <div class="value">{{ currentLevel }}</div>
-        </div>
+
         <div class="metric">
           <div class="label">Current Batch</div>
           <div class="value">{{ currentBatch }}</div>
-
-        </div>
-        <div class="metric">
-          <div class="label">Total companies attended</div>
-          <div class="value">{{ previousPlacements.length }}</div>
         </div>
 
       </div>
-      <button class="btn btn-primary">View Details</button>
-
-
     </div>
 
     <div class="card placements-card">
@@ -34,9 +23,7 @@
           <h3>{{ index + 1 }}. {{ prev.name }}</h3>
           <p>{{ prev.role }}</p>
         </div>
-
       </div>
-      <button class="btn btn-primary">View Placements</button>
     </div>
 
     <div class="card marks-card">
@@ -50,39 +37,69 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(assessment, index) in previousMarks" :key="index">
-            <td>{{ assessment.name }}</td>
-            <td>{{ assessment.mark }}</td>
-            <td>{{ assessment.attendedTime }}</td>
+          <tr v-for="(assessment, index) in assessmentsCompleted" :key="index">
+            <td>{{ assessment.assessmentName }}</td>
+            <td>{{ assessment.marks }}</td>
+            <td>{{ new Date(assessment.dateCompleted).toLocaleDateString() }}</td>
           </tr>
         </tbody>
       </table>
-      <button class="btn btn-primary">View All Marks</button>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Performance',
   data() {
     return {
-      currentLevel: 3,
-      currentBatch: 'Batch 2025',
-      previousPlacements: [
-        { name: 'Soliton', role: "Software Developer" },
-        { name: 'Mini Cooper', role: "Full Stack developer", }
-      ],
-      name: 'Hari',
-      previousMarks: [
-        { name: 'Level-1', mark: 85, attendedTime: '2023-01-15' },
-        { name: 'Level-2', mark: 90, attendedTime: '2023-02-20' },
-      ]
+      currentLevel: null,
+      currentBatch: null,
+      studentname: null,
+      previousPlacements: [],
+      assessmentsCompleted: []
+    };
+  },
+  created() {
+    this.fetchPerformanceData();
+  },
+  methods: {
+    async fetchPerformanceData() {
+      axios.defaults.withCredentials = true;
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        await this.logout();
+        return;
+      }
+
+      try {
+        const response = await axios.post('http://localhost:4000/performance', { studentId: userId });
+        const { studentname, batch, assessmentsCompleted } = response.data;
+
+        this.studentname = studentname;
+        this.currentBatch = batch;
+        this.assessmentsCompleted = assessmentsCompleted;
+      } catch (error) {
+        console.error('Error fetching performance data:', error);
+      }
+    },
+    async logout() {
+      try {
+        await axios.post('http://localhost:4000/logout');
+        localStorage.removeItem('email');
+        localStorage.removeItem('userType');
+      } catch (error) {
+        console.error('Error logging out:', error);
+      } finally {
+        this.$router.push('/login');
+      }
     }
   }
-}
+};
 </script>
-
 <style>
 .performance {
   display: flex;
