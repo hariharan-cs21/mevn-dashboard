@@ -82,7 +82,7 @@
 
     <div v-if="showUploadPopup" class="popup">
       <div class="popup-content">
-        <p>File uploaded successfully!</p>
+        <p>{{ popupMessage }}</p>
         <button @click="hideUploadPopup" class="popup-button">OK</button>
       </div>
     </div>
@@ -101,6 +101,7 @@ const nameFilter = ref('');
 const departmentFilter = ref('');
 // const hostellerFilter = ref('');
 const isLoading = ref(false);
+const popupMessage = ref('');
 
 const router = useRouter();
 
@@ -128,6 +129,8 @@ const viewPerformance = async (id) => {
 
   } catch (error) {
     console.error('Error fetching performance data:', error);
+    showUploadPopup.value = true;
+    popupMessage.value = error.response ? error.response.data.message : 'Unknown error occurred';
   }
 };
 
@@ -211,7 +214,7 @@ const uploadFile = async () => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    console.log('File uploaded successfully.');
+    popupMessage.value = "File uploaded successfully!"
     showUploadPopup.value = true;
   } catch (error) {
     console.error('An error occurred while uploading the file:', error);

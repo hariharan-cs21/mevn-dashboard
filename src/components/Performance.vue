@@ -47,7 +47,13 @@
         </tbody>
       </table>
     </div>
+    <div v-if="showUploadPopup" class="popup">
+      <div class="popup-content">
+        <p>{{ popupMessage }}</p>
 
+        <button @click="hideUploadPopup" class="popup-button">OK</button>
+      </div>
+    </div>
     <div class="card chart-card">
       <h2>Assessment Scores</h2>
       <canvas id="assessmentChart"></canvas>
@@ -58,57 +64,54 @@
 <script>
 import axios from 'axios';
 import Chart from 'chart.js/auto';
+import { ref } from 'vue';
 
 export default {
   name: 'Performance',
-  data() {
-    return {
-      studentname: '',
-      batch: '',
-      contact: '',
-      studentEmail: '',
-      undertaking: '',
-      assessmentsCompleted: []
-    };
-  },
-  created() {
-    this.fetchPerformanceData();
-  },
-  mounted() {
-    this.renderChart();
-  },
-  methods: {
-    async fetchPerformanceData() {
+  setup() {
+    const studentname = ref('');
+    const batch = ref('');
+    const contact = ref('');
+    const studentEmail = ref('');
+    const undertaking = ref('');
+    const assessmentsCompleted = ref([]);
+    const popupMessage = ref('');
+    const showUploadPopup = ref(false);
+    const chartInstance = ref(null);
+
+    const fetchPerformanceData = async () => {
       axios.defaults.withCredentials = true;
 
       const userId = localStorage.getItem('userId');
       if (!userId) {
-        await this.logout();
+        await logout();
         return;
       }
 
       try {
         const response = await axios.post('http://localhost:4000/performance', { studentId: userId });
-        const { studentname, batch, contact, studentEmail, undertaking, assessmentsCompleted } = response.data;
+        const { studentname: sName, batch: bBatch, contact: cContact, studentEmail: sEmail, undertaking: uUndertaking, assessmentsCompleted: aAssessmentsCompleted } = response.data;
 
-        if (assessmentsCompleted && assessmentsCompleted.length > 0) {
-          this.studentname = studentname;
-          this.batch = batch;
-          this.contact = contact;
-          this.studentEmail = studentEmail;
-          this.undertaking = undertaking;
-          this.assessmentsCompleted = assessmentsCompleted;
+        if (aAssessmentsCompleted && aAssessmentsCompleted.length > 0) {
+          studentname.value = sName;
+          batch.value = bBatch;
+          contact.value = cContact;
+          studentEmail.value = sEmail;
+          undertaking.value = uUndertaking;
+          assessmentsCompleted.value = aAssessmentsCompleted;
 
-          this.renderChart();
+          renderChart();
         } else {
           console.warn('No assessments data found');
         }
       } catch (error) {
         console.error('Error fetching performance data:', error);
+        showUploadPopup.value = true;
+        popupMessage.value = error.response ? error.response.data.message : 'Unknown error occurred';
       }
-    },
+    };
 
-    async logout() {
+    const logout = async () => {
       try {
         await axios.post('http://localhost:4000/logout');
         localStorage.removeItem('email');
@@ -118,20 +121,25 @@ export default {
       } finally {
         this.$router.push('/login');
       }
-    },
-    renderChart() {
+    };
+
+    const hideUploadPopup = () => {
+      showUploadPopup.value = false;
+    };
+
+    const renderChart = () => {
       const ctx = document.getElementById('assessmentChart').getContext('2d');
 
-      if (this.chartInstance) {
-        this.chartInstance.destroy();
+      if (chartInstance.value) {
+        chartInstance.value.destroy();
       }
 
-      const labels = this.assessmentsCompleted.map(assessment => assessment.assessmentName);
-      const marks = this.assessmentsCompleted.map(assessment => assessment.marks);
-      const totalMarks = this.assessmentsCompleted.map(assessment => assessment.totalMarks);
-      const averageMarks = this.assessmentsCompleted.map(assessment => assessment.averageMarks);
+      const labels = assessmentsCompleted.value.map(assessment => assessment.assessmentName);
+      const marks = assessmentsCompleted.value.map(assessment => assessment.marks);
+      const totalMarks = assessmentsCompleted.value.map(assessment => assessment.totalMarks);
+      const averageMarks = assessmentsCompleted.value.map(assessment => assessment.averageMarks);
 
-      this.chartInstance = new Chart(ctx, {
+      chartInstance.value = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -173,11 +181,29 @@ export default {
           }
         }
       });
-    }
+    };
 
+    return {
+      studentname,
+      batch,
+      contact,
+      studentEmail,
+      undertaking,
+      assessmentsCompleted,
+      popupMessage,
+      showUploadPopup,
+      hideUploadPopup,
+      fetchPerformanceData,
+      chartInstance
+    };
+  },
+
+  mounted() {
+    this.fetchPerformanceData();
   }
 };
 </script>
+
 
 <style>
 .performance-container {
@@ -252,5 +278,38 @@ export default {
 
 .chart-card {
   max-width: 800px;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.popup-button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup-button:hover {
+  background-color: #0056b3;
 }
 </style>
