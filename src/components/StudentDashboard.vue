@@ -71,31 +71,47 @@ export default {
     renderProgressChart() {
       const ctx = document.getElementById('progressChart').getContext('2d');
       new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
-          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+          labels: this.performanceData.assessmentsCompleted.map(a => a.assessmentName),
           datasets: [{
-            label: 'Progress',
-            data: [80, 50, 70, 80, 60],
+            label: 'Marks',
+            data: this.performanceData.assessmentsCompleted.map(a => a.marks),
             backgroundColor: 'rgba(54, 162, 235, 0.5)',
             borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Total Marks',
+            data: this.performanceData.assessmentsCompleted.map(a => a.totalMarks), // Total Marks
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'Average Marks',
+            data: this.performanceData.assessmentsCompleted.map(a => a.averageMarks), // Average Marks
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1
           }]
         },
         options: {
           scales: {
             y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function (value) {
-                  return value + '%';
-                }
-              }
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            tooltip: {
+              mode: 'index',
+              intersect: false
             }
           }
         }
       });
     }
+
   }
 }
 </script>
@@ -174,9 +190,14 @@ export default {
 }
 
 .chart-container {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 0 auto;
+}
+
+canvas {
+  width: 100% !important;
+  height: auto !important;
 }
 </style>

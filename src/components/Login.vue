@@ -53,9 +53,13 @@ async function submitForm() {
 
       localStorage.setItem("email", userData.user_email);
 
-      if (userData._id) {
+      if (userData.userType === "student") {
         localStorage.setItem("userId", userData.studentId._id);
-      } else {
+      }
+      else if (userData.userType === "admin") {
+        localStorage.setItem("userId", userData._id);
+      }
+      else {
         console.error("User ID not found in response");
         showUploadPopup.value = true;
         popupMessage.value = "User ID not found in response";
@@ -84,36 +88,36 @@ async function submitForm() {
 const hideUploadPopup = () => {
   showUploadPopup.value = false;
 };
-onMounted(async () => {
-  axios.defaults.withCredentials = true;
+// onMounted(async () => {
+//   axios.defaults.withCredentials = true;
 
 
-  try {
-    const response = await axios.get('http://localhost:4000/checkSession');
+//   try {
+//     const response = await axios.get('http://localhost:4000/checkSession');
 
-    if (response) {
-      const sessionData = await response.data;
-      console.log(sessionData);
-      if (sessionData.loggedIn) {
-        if (sessionData.user_type === 'admin') {
-          localStorage.setItem("userType", "admin")
-          router.push('/studentData');
-          alert("Logging in with previous session")
-        } else if (sessionData.user_type === 'student') {
-          localStorage.setItem("userType", "student")
-          router.push('/performance');
-          alert("Logging in with previous session")
-        }
-      } else {
+//     if (response) {
+//       const sessionData = await response.data;
+//       console.log(sessionData);
+//       if (sessionData.loggedIn) {
+//         if (sessionData.user_type === 'admin') {
+//           localStorage.setItem("userType", "admin")
+//           router.push('/studentData');
+//           alert("Logging in with previous session")
+//         } else if (sessionData.user_type === 'student') {
+//           localStorage.setItem("userType", "student")
+//           router.push('/performance');
+//           alert("Logging in with previous session")
+//         }
+//       } else {
 
-      }
-    } else {
-      console.error('Failed to check session:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Error checking session:', error);
-  }
-});
+//       }
+//     } else {
+//       console.error('Failed to check session:', response.statusText);
+//     }
+//   } catch (error) {
+//     console.error('Error checking session:', error);
+//   }
+// });
 </script>
 
 <style scoped>

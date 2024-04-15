@@ -53,6 +53,7 @@
             <th>Contact</th>
             <th>Department</th>
             <th>Student Email</th>
+            <th>Performance</th>
             <th>Undertaking</th>
           </tr>
         </thead>
@@ -66,11 +67,12 @@
             <td>{{ row.contact }}</td>
             <td>{{ row.department }}</td>
             <td>{{ row.studentEmail }}</td>
-            <td>{{ row.undertaking }}</td>
             <td>
               <button class="view" @click="viewPerformance(row._id)">View Performance</button>
               <button class="add-performance" @click="addPerformance(row._id)">Add Performance</button>
             </td>
+            <td>{{ row.undertaking }}</td>
+
           </tr>
         </tbody>
       </table>
@@ -303,8 +305,20 @@ const filteredTableData = computed(() => {
   cursor: pointer;
 }
 
+.add-performance {
+  padding: 4px 20px;
+  background-color: skyblue;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 2px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+}
+
 .view {
-  padding: 8px 20px;
+  padding: 4px 20px;
   background-color: gray;
   color: white;
   border: none;

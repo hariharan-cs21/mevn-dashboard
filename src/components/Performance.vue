@@ -1,69 +1,81 @@
 <template>
-  <div class="performance">
+  <div class="performance-container">
     <div class="card performance-card">
       <h2>Performance Overview</h2>
       <div class="metrics">
         <div class="metric">
-          <div class="label">Name</div>
-          <div class="value">{{ studentname }}</div>
+          <span class="label">Name:</span>
+          <span class="value">{{ studentname }}</span>
         </div>
-
         <div class="metric">
-          <div class="label">Current Batch</div>
-          <div class="value">{{ currentBatch }}</div>
+          <span class="label">Batch:</span>
+          <span class="value">{{ batch }}</span>
         </div>
-
+        <div class="metric">
+          <span class="label">Contact:</span>
+          <span class="value">{{ contact }}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Email:</span>
+          <span class="value">{{ studentEmail }}</span>
+        </div>
+        <div class="metric">
+          <span class="label">Undertaking:</span>
+          <span class="value">{{ undertaking }}</span>
+        </div>
       </div>
     </div>
 
-    <div class="card placements-card">
-      <h2>Past Placements</h2>
-      <div style="max-height: 80vh; overflow: auto;" class="placements">
-        <div v-for="(prev, index) in previousPlacements" :key="index" class="placement">
-          <h3>{{ index + 1 }}. {{ prev.name }}</h3>
-          <p>{{ prev.role }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="card marks-card">
+    <div class="card assessments-card">
       <h2>Assessments</h2>
       <table class="marks-table">
         <thead>
           <tr>
             <th>Assessment Name</th>
             <th>Mark</th>
-            <th>Attended Time</th>
+            <th>Attendance</th>
+            <th>Comments</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(assessment, index) in assessmentsCompleted" :key="index">
             <td>{{ assessment.assessmentName }}</td>
-            <td>{{ assessment.marks }}</td>
-            <td>{{ new Date(assessment.dateCompleted).toLocaleDateString() }}</td>
+            <td>{{ assessment.marks }} / {{ assessment.totalMarks }}</td>
+            <td>{{ assessment.attendancePercentage }}%</td>
+            <td>{{ assessment.comments }}</td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div class="card chart-card">
+      <h2>Assessment Scores</h2>
+      <canvas id="assessmentChart"></canvas>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Chart from 'chart.js/auto';
 
 export default {
   name: 'Performance',
   data() {
     return {
-      currentLevel: null,
-      currentBatch: null,
-      studentname: null,
-      previousPlacements: [],
+      studentname: '',
+      batch: '',
+      contact: '',
+      studentEmail: '',
+      undertaking: '',
       assessmentsCompleted: []
     };
   },
   created() {
     this.fetchPerformanceData();
+  },
+  mounted() {
+    this.renderChart();
   },
   methods: {
     async fetchPerformanceData() {
@@ -77,15 +89,25 @@ export default {
 
       try {
         const response = await axios.post('http://localhost:4000/performance', { studentId: userId });
-        const { studentname, batch, assessmentsCompleted } = response.data;
+        const { studentname, batch, contact, studentEmail, undertaking, assessmentsCompleted } = response.data;
 
-        this.studentname = studentname;
-        this.currentBatch = batch;
-        this.assessmentsCompleted = assessmentsCompleted;
+        if (assessmentsCompleted && assessmentsCompleted.length > 0) {
+          this.studentname = studentname;
+          this.batch = batch;
+          this.contact = contact;
+          this.studentEmail = studentEmail;
+          this.undertaking = undertaking;
+          this.assessmentsCompleted = assessmentsCompleted;
+
+          this.renderChart();
+        } else {
+          console.warn('No assessments data found');
+        }
       } catch (error) {
         console.error('Error fetching performance data:', error);
       }
     },
+
     async logout() {
       try {
         await axios.post('http://localhost:4000/logout');
@@ -96,85 +118,123 @@ export default {
       } finally {
         this.$router.push('/login');
       }
+    },
+    renderChart() {
+      const ctx = document.getElementById('assessmentChart').getContext('2d');
+
+      if (this.chartInstance) {
+        this.chartInstance.destroy();
+      }
+
+      const labels = this.assessmentsCompleted.map(assessment => assessment.assessmentName);
+      const marks = this.assessmentsCompleted.map(assessment => assessment.marks);
+      const totalMarks = this.assessmentsCompleted.map(assessment => assessment.totalMarks);
+      const averageMarks = this.assessmentsCompleted.map(assessment => assessment.averageMarks);
+
+      this.chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Marks',
+              data: marks,
+              backgroundColor: 'rgba(54, 162, 235, 0.5)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Total Marks',
+              data: totalMarks,
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Average Marks',
+              data: averageMarks,
+              backgroundColor: 'rgba(75, 192, 192, 0.5)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            tooltip: {
+              mode: 'index',
+              intersect: false
+            }
+          }
+        }
+      });
     }
+
   }
 };
 </script>
+
 <style>
-.performance {
+.performance-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: space-between;
   gap: 20px;
   padding: 20px;
 }
 
 .card {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
   border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  width: calc(33.33% - 40px);
-  max-width: 300px;
-  min-width: 250px;
-  text-align: left;
+  width: 100%;
+  max-width: 600px;
 }
 
 .card h2 {
-  margin-top: 0;
-  font-size: 1.5rem;
+  border-bottom: 2px solid #333;
   color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
 }
 
-.metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.metrics,
+.marks-table {
+  width: 100%;
 }
 
 .metric {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 .label {
   color: #666;
+  font-weight: bold;
 }
 
-.projects,
-.placements {
-  margin-top: 15px;
-}
-
-.project,
-.placement {
-  background-color: #f2f2f2;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.project h3,
-.placement h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.project p,
-.placement p {
-  margin: 5px 0;
-  color: #666;
+.value {
+  color: #333;
 }
 
 .marks-table {
-  width: 100%;
   border-collapse: collapse;
+  width: 100%;
 }
 
 .marks-table th,
 .marks-table td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
+  text-align: left;
 }
 
 .marks-table th {
@@ -182,27 +242,15 @@ export default {
   color: #333;
 }
 
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.marks-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.btn:hover {
-  background-color: #0056b3;
+.marks-table tr:hover {
+  background-color: #f5f5f5;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  margin-top: 2px;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
+.chart-card {
+  max-width: 800px;
 }
 </style>

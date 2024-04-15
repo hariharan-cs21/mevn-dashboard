@@ -15,7 +15,7 @@
         <select id="userType" v-model="user.userType" required>
           <option value="" disabled>Select User Type</option>
           <option value="admin">Admin</option>
-          <option value="student">Student</option>
+          <!-- <option value="student">Student</option> -->
           <option value="faculty">Faculty</option>
         </select>
       </div>
