@@ -157,10 +157,6 @@ const handleFileUpload = (event) => {
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      if (jsonData.length > 0) {
-        tableHeaders.value = jsonData[0];
-        tableData.value = jsonData.slice(1);
-      }
     });
   };
 
@@ -214,7 +210,7 @@ const uploadFile = async () => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    popupMessage.value = "File uploaded successfully!"
+    popupMessage.value = "File uploaded successfully"
     showUploadPopup.value = true;
   } catch (error) {
     console.error('An error occurred while uploading the file:', error);
