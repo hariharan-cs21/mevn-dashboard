@@ -30,8 +30,7 @@ export default {
         const response = await axios.post("http://localhost:4000/logout");
 
         if (response.status === 200) {
-          localStorage.removeItem("email");
-          localStorage.removeItem("userType");
+          localStorage.clear()
           this.$router.push('/login');
         } else {
           console.log("Failed to logout");
@@ -69,4 +68,3 @@ export default {
   color: #007bff;
 }
 </style>
-checksession if not loggedout show logout button else hide it

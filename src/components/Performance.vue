@@ -147,23 +147,26 @@ export default {
             {
               label: 'Marks',
               data: marks,
-              backgroundColor: 'rgba(54, 162, 235, 0.5)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1
+              backgroundColor: '#4CAF50',
+              borderColor: '#45A049',
+              borderWidth: 2,
+              borderRadius: 4
             },
             {
               label: 'Total Marks',
               data: totalMarks,
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1
+              backgroundColor: '#FFC107',
+              borderColor: '#FFA000',
+              borderWidth: 2,
+              borderRadius: 4
             },
             {
               label: 'Average Marks',
               data: averageMarks,
-              backgroundColor: 'rgba(75, 192, 192, 0.5)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1
+              backgroundColor: '#2196F3',
+              borderColor: '#1E88E5',
+              borderWidth: 2,
+              borderRadius: 4
             }
           ]
         },
@@ -277,6 +280,7 @@ export default {
 }
 
 .chart-card {
+  width: 100%;
   max-width: 800px;
 }
 

@@ -13,10 +13,12 @@
         <div class="column">
           <p><strong>Batch:</strong> {{ performanceData.batch }}</p>
           <p><strong>Department:</strong> {{ performanceData.department }}</p>
-          <p><strong>Contact: </strong><a href="tel:{{ performanceData.contact }}">{{ performanceData.contact }}</a></p>
+          <p><strong>Contact: </strong><a href="tel:{{ performanceData.contact }}" class="contact-link">{{
+            performanceData.contact }}</a></p>
         </div>
         <div class="column">
-          <p><strong>Email:</strong> {{ performanceData.studentEmail }}</p>
+          <p><strong>Email:</strong> <a href="mailto:{{ performanceData.studentEmail }}" class="email-link">{{
+            performanceData.studentEmail }}</a></p>
           <p><strong>Undertaking:</strong> {{ performanceData.undertaking }}</p>
         </div>
       </div>
@@ -35,14 +37,14 @@
             <tr v-for="assessment in performanceData.assessmentsCompleted" :key="assessment._id">
               <td>{{ assessment.assessmentName }}</td>
               <td>{{ new Date(assessment.dateCompleted).toLocaleDateString() }}</td>
-              <td>{{ assessment.marks }}</td>
+              <td>{{ assessment.marks }} / {{ assessment.totalMarks }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <div class="chart-container">
-        <canvas id="progressChart" width="600" height="300"></canvas>
+        <canvas id="progressChart"></canvas>
       </div>
     </div>
   </div>
@@ -77,26 +79,31 @@ export default {
           datasets: [{
             label: 'Marks',
             data: this.performanceData.assessmentsCompleted.map(a => a.marks),
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
+            backgroundColor: '#4CAF50',
+            borderColor: '#45A049',
+            borderWidth: 2,
+            borderRadius: 4
           },
           {
             label: 'Total Marks',
-            data: this.performanceData.assessmentsCompleted.map(a => a.totalMarks), // Total Marks
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
+            data: this.performanceData.assessmentsCompleted.map(a => a.totalMarks),
+            backgroundColor: '#FFC107',
+            borderColor: '#FFA000',
+            borderWidth: 2,
+            borderRadius: 4
           },
           {
             label: 'Average Marks',
-            data: this.performanceData.assessmentsCompleted.map(a => a.averageMarks), // Average Marks
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
+            data: this.performanceData.assessmentsCompleted.map(a => a.averageMarks),
+            backgroundColor: '#2196F3',
+            borderColor: '#1E88E5',
+            borderWidth: 2,
+            borderRadius: 4
           }]
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true
@@ -111,21 +118,21 @@ export default {
         }
       });
     }
-
   }
 }
 </script>
 
 <style scoped>
 .container {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .header {
-  background-color: #f8f9fa;
+  background-color: #333;
+  color: #fff;
   padding: 20px 40px;
-  border-bottom: 1px solid #e2e6ea;
+  border-bottom: 2px solid #1a1a1a;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -133,8 +140,8 @@ export default {
 
 .header-title {
   margin: 0;
-  font-size: 28px;
-  color: #333;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .header-details {
@@ -146,42 +153,57 @@ export default {
 }
 
 .student-info {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 20px;
-  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 40px;
 }
 
 .column {
-  background-color: #ffffff;
-  padding: 20px;
+  flex: 1;
+  background-color: #f9f9f9;
+  padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .column p {
-  margin: 5px 0;
+  margin: 15px 0;
+  font-size: 18px;
 }
 
 .column p strong {
   font-weight: bold;
-  color: #555555;
+  color: #555;
+}
+
+.contact-link,
+.email-link {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.contact-link:hover,
+.email-link:hover {
+  text-decoration: underline;
 }
 
 .assessment-data {
-  margin-top: 40px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .assessment-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .assessment-table th,
 .assessment-table td {
   border: 1px solid #e0e0e0;
-  padding: 10px;
+  padding: 15px;
   text-align: left;
 }
 
@@ -191,13 +213,11 @@ export default {
 
 .chart-container {
   width: 100%;
-  max-width: 600px;
-  height: auto;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 canvas {
-  width: 100% !important;
-  height: auto !important;
+  border-radius: 8px;
 }
 </style>

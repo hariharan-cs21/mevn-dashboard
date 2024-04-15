@@ -224,6 +224,7 @@ const hideUploadPopup = () => {
 const fetchData = async () => {
   axios.defaults.withCredentials = true;
   isLoading.value = true;
+
   try {
     const response = await axios.get('http://localhost:4000/studentData');
     const data = response.data;
@@ -231,6 +232,8 @@ const fetchData = async () => {
     if (data.length > 0) {
       tableHeaders.value = Object.keys(data[0]);
       tableData.value = data;
+
+      localStorage.setItem('studentData', JSON.stringify(data));
     }
   } catch (error) {
     console.error('An error occurred while fetching data:', error);
@@ -239,30 +242,42 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
-fetchData()
+
+
 onMounted(async () => {
   axios.defaults.withCredentials = true;
 
   try {
     const response = await axios.get('http://localhost:4000/checkSession');
     const sessionData = response.data;
-    console.log(sessionData);
+
 
     if (!sessionData.loggedIn) {
       router.push('/login');
     }
-    if (sessionData.user_type === 'admin') {
-      localStorage.setItem("userType", "admin")
 
+    if (sessionData.user_type === 'admin') {
+      localStorage.setItem("userType", "admin");
     }
+
     if (sessionData.user_type === 'student') {
       router.push('/404notfound');
-      localStorage.setItem("userType", "student")
+      localStorage.setItem("userType", "student");
     }
   } catch (error) {
     console.error('Error checking session:', error);
   }
+
+  const cachedData = localStorage.getItem('studentData');
+
+  if (cachedData) {
+    tableData.value = JSON.parse(cachedData);
+    tableHeaders.value = Object.keys(tableData.value[0]);
+  } else {
+    fetchData();
+  }
 });
+
 
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
