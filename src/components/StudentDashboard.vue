@@ -45,6 +45,26 @@
               </td>
             </tr>
           </tbody>
+
+        </table>
+      </div>
+      <div class="card problem-solving-card">
+        <h2>Problem Solving</h2>
+        <table class="problem-solving-table">
+          <thead>
+            <tr>
+              <th>Level Name</th>
+              <th>Attempts</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="problem in performanceData.problemSolving" :key="problem._id">
+              <td>{{ problem.levelName }}</td>
+              <td>{{ problem.attempts }}</td>
+              <td>{{ new Date(problem.date).toLocaleDateString() }}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -149,6 +169,31 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.problem-solving-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.problem-solving-table th,
+.problem-solving-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.problem-solving-table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.problem-solving-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.problem-solving-table tr:hover {
+  background-color: #f5f5f5;
 }
 
 .header-title {
