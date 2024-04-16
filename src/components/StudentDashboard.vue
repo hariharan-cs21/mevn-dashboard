@@ -48,7 +48,7 @@
 
         </table>
       </div>
-      <div class="card problem-solving-card">
+      <div class="card problem-solving-card" style="margin-bottom: 10px;">
         <h2>Problem Solving</h2>
         <table class="problem-solving-table">
           <thead>

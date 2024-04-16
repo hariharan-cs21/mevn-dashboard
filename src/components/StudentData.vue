@@ -11,6 +11,17 @@
         <div class="loading-spinner"></div>
       </div>
       <div class="filter-container">
+        <label for="batchF" class="filter-label">Filter by Batch:</label>
+        <select id="batchF" v-model="batchF" class="filter-input">
+          <option value="">All</option>
+          <option value="Batch 1">Batch 1</option>
+          <option value="Batch 2">Batch 2</option>
+          <option value="Batch 3">Batch 3</option>
+          <option value="Batch 4">Batch 4</option>
+          <option value="Batch 5">Batch 5</option>
+        </select>
+      </div>
+      <div class="filter-container">
         <label for="departmentFilter" class="filter-label">Filter by Department:</label>
         <select id="departmentFilter" v-model="departmentFilter" class="filter-input">
           <option value="">All</option>
@@ -99,6 +110,8 @@ const tableHeaders = ref([]);
 const showUploadPopup = ref(false);
 const nameFilter = ref('');
 const departmentFilter = ref('');
+const batchF = ref('');
+
 // const hostellerFilter = ref('');
 const isLoading = ref(false);
 const popupMessage = ref('');
@@ -288,6 +301,9 @@ const filteredTableData = computed(() => {
 
   if (departmentFilter.value.trim() !== '') {
     filteredData = filteredData.filter(row => row.department.toLowerCase().includes(departmentFilter.value.trim().toLowerCase()));
+  }
+  if (batchF.value.trim() !== '') {
+    filteredData = filteredData.filter(row => row.batch.toLowerCase().includes(batchF.value.trim().toLowerCase()));
   }
 
   // if (hostellerFilter.value !== '') {
