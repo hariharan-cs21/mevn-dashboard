@@ -1,45 +1,51 @@
 <template>
-    <div class="add-performance">
-        <h2>Add Performance Data</h2>
-        <form @submit.prevent="addPerformance">
-            <div class="form-group">
-                <label for="assessmentName">Assessment Name:</label>
-                <input type="text" id="assessmentName" v-model="assessmentName" required>
-            </div>
-            <div class="form-group">
-                <label for="dateCompleted">Date Completed:</label>
-                <input type="date" id="dateCompleted" v-model="dateCompleted" required>
-            </div>
-            <div class="form-group">
-                <label for="marks">Marks:</label>
-                <input type="number" id="marks" v-model="marks" required>
-            </div>
-            <div class="form-group">
-                <label for="totalMarks">Total Marks:</label>
-                <input type="number" id="totalMarks" v-model="totalMarks" required>
-            </div>
-            <div class="form-group">
-                <label for="averageMarks">Average Marks:</label>
-                <input type="number" id="averageMarks" v-model="averageMarks" required>
-            </div>
-            <div class="form-group">
-                <label for="attendancePercentage">Attendance Percentage:</label>
-                <input type="number" id="attendancePercentage" v-model="attendancePercentage" required>
-            </div>
-            <div class="form-group">
-                <label for="comments">Comments:</label>
-                <textarea id="comments" v-model="comments"></textarea>
-            </div>
-            <button type="submit">Add</button>
-        </form>
+    <div style="display: flex;">
+        <div class="add-performance">
+            <h2>Add Performance Data</h2>
+            <form @submit.prevent="addPerformance">
+                <div class="form-group">
+                    <label for="assessmentName">Assessment Name:</label>
+                    <input type="text" id="assessmentName" v-model="assessmentName" required>
+                </div>
+                <div class="form-group">
+                    <label for="dateCompleted">Date Completed:</label>
+                    <input type="date" id="dateCompleted" v-model="dateCompleted" required>
+                </div>
+                <div class="form-group">
+                    <label for="marks">Marks:</label>
+                    <input type="number" id="marks" v-model="marks" required>
+                </div>
+                <div class="form-group">
+                    <label for="totalMarks">Total Marks:</label>
+                    <input type="number" id="totalMarks" v-model="totalMarks" required>
+                </div>
+                <div class="form-group">
+                    <label for="averageMarks">Average Marks:</label>
+                    <input type="number" id="averageMarks" v-model="averageMarks" required>
+                </div>
+                <div class="form-group">
+                    <label for="attendancePercentage">Attendance Percentage:</label>
+                    <input type="number" id="attendancePercentage" v-model="attendancePercentage" required>
+                </div>
+                <div class="form-group">
+                    <label for="comments">Comments:</label>
+                    <textarea id="comments" v-model="comments"></textarea>
+                </div>
+                <button type="submit">Add</button>
+            </form>
+        </div>
+        <div>
+            <ProblemSolving />
+        </div>
     </div>
+
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
-
+import ProblemSolving from "./AddProblemSolving.vue"
 const route = useRoute();
 const studentId = route.query.studentId;
 
@@ -68,7 +74,7 @@ const addPerformance = async () => {
             }]
         };
 
-        const response = await axios.post('http://localhost:4000/addPerformance', performanceData);
+        const response = await axios.post('http://localhost:4000/addPerformance/assessment', performanceData);
 
         console.log('Server response:', response.data);
 

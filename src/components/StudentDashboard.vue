@@ -31,6 +31,7 @@
               <th>Assessment Name</th>
               <th>Date Completed</th>
               <th>Marks</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -38,6 +39,10 @@
               <td>{{ assessment.assessmentName }}</td>
               <td>{{ new Date(assessment.dateCompleted).toLocaleDateString() }}</td>
               <td>{{ assessment.marks }} / {{ assessment.totalMarks }}</td>
+              <td>
+                <button @click="deleteAssessment(performanceData._id, assessment._id)"
+                  class=" delete-button">Delete</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -51,6 +56,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Chart from 'chart.js/auto';
 
 export default {
@@ -70,6 +76,13 @@ export default {
     };
   },
   methods: {
+    async deleteAssessment(id, assessmentId) {
+      const response = await axios.delete(`http://localhost:4000/performance/${id}/${assessmentId}`)
+      console.log(response.data);
+      this.performanceData.assessmentsCompleted = this.performanceData.assessmentsCompleted.filter(
+        assessment => assessment._id !== assessmentId
+      );
+    },
     renderProgressChart() {
       const ctx = document.getElementById('progressChart').getContext('2d');
       new Chart(ctx, {
@@ -146,6 +159,28 @@ export default {
 
 .header-details {
   text-align: right;
+}
+
+.delete-button:hover {
+  padding: 6px 15px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+}
+
+.delete-button {
+  padding: 6px 15px;
+  background-color: rgba(239, 11, 11, 0.797);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
 }
 
 .main-content {

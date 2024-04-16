@@ -47,6 +47,26 @@
         </tbody>
       </table>
     </div>
+    <div class="card problem-solving-card">
+      <h2>Problem Solving</h2>
+      <table class="problem-solving-table">
+        <thead>
+          <tr>
+            <th>Level Name</th>
+            <th>Attempts</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(problem, index) in problemSolving" :key="index">
+            <td>{{ problem.levelName }}</td>
+            <td>{{ problem.attempts }}</td>
+            <td>{{ new Date(problem.date).toLocaleDateString() }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div v-if="showUploadPopup" class="popup">
       <div class="popup-content">
         <p>{{ popupMessage }}</p>
@@ -78,6 +98,7 @@ export default {
     const popupMessage = ref('');
     const showUploadPopup = ref(false);
     const chartInstance = ref(null);
+    const problemSolving = ref([]);
 
     const fetchPerformanceData = async () => {
       axios.defaults.withCredentials = true;
@@ -90,20 +111,21 @@ export default {
 
       try {
         const response = await axios.post('http://localhost:4000/performance', { studentId: userId });
-        const { studentname: sName, batch: bBatch, contact: cContact, studentEmail: sEmail, undertaking: uUndertaking, assessmentsCompleted: aAssessmentsCompleted } = response.data;
+        const { studentname: sName, batch: bBatch, contact: cContact, studentEmail: sEmail, undertaking: uUndertaking, assessmentsCompleted: aAssessmentsCompleted, problemSolving: pProblemSolving } = response.data;
 
-        if (aAssessmentsCompleted && aAssessmentsCompleted.length > 0) {
+        if (response.data) {
           studentname.value = sName;
           batch.value = bBatch;
           contact.value = cContact;
           studentEmail.value = sEmail;
           undertaking.value = uUndertaking;
           assessmentsCompleted.value = aAssessmentsCompleted;
-
+          problemSolving.value = pProblemSolving;
           renderChart();
         } else {
           console.warn('No assessments data found');
         }
+
       } catch (error) {
         console.error('Error fetching performance data:', error);
         showUploadPopup.value = true;
@@ -193,6 +215,7 @@ export default {
       studentEmail,
       undertaking,
       assessmentsCompleted,
+      problemSolving,
       popupMessage,
       showUploadPopup,
       hideUploadPopup,
@@ -208,13 +231,38 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .performance-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 20px;
   padding: 20px;
+}
+
+.problem-solving-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.problem-solving-table th,
+.problem-solving-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.problem-solving-table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.problem-solving-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.problem-solving-table tr:hover {
+  background-color: #f5f5f5;
 }
 
 .card {
